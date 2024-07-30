@@ -2,12 +2,12 @@ SHELL := /bin/bash
 
 PACKAGE=seymour-dev
 VERSION:=0.1.0
-CONTAINER:=ghcr.io/freshrobotics/${PACKAGE}:${VERSION}
+PLATFORM=linux/amd64
+#PLATFORM=linux/arm64
+CONTAINER:=ghcr.io/freshrobotics/${PACKAGE}-${PLATFORM}:${VERSION}
 TARFILE:=${PACKAGE}-${VERSION}.tar
 USERNAME=seymour
 WORKSPACE=/home/${USERNAME}/workspace
-PLATFORM=linux/amd64
-#PLATFORM=linux/arm64
 
 PHONY: help
 help: ## show help message
