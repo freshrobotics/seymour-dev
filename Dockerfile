@@ -7,7 +7,6 @@ ARG USERNAME="seymour"
 ARG HOME_DIR="/home/${USERNAME}"
 ARG WORKSPACE="${HOME_DIR}/workspace"
 ARG DDS_CONFIG_DIR="/opt/dds/config"
-ARG CYCLONEDDS_URI="${DDS_CONFIG_DIR}/cyclonedds.xml"
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG RUN_AS_UID=1000
 ARG RUN_AS_GID=1000
@@ -15,6 +14,12 @@ ARG RUN_AS_GID=1000
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 ENV ROS_DISTRO="humble"
+ENV CYCLONEDDS_URI="${DDS_CONFIG_DIR}/cyclonedds.xml"
+ENV FASTRTPS_DEFAULT_PROFILES_FILE="${DDS_CONFIG_DIR}/fastrtps.xml"
+
+# rmw implementation can be overridden at runtime
+# RMW_IMPLEMENTATION -> "rmw_cyclonedds_cpp" | "rmw_fastrtps_cpp"
+ENV RMW_IMPLEMENTATION="rmw_cyclonedds_cpp"
 
 # setup utc timeszone & install base ubuntu packages
 RUN echo 'Etc/UTC' > /etc/timezone  \
@@ -43,6 +48,7 @@ RUN echo "deb http://packages.ros.org/ros2/ubuntu jammy main" \
     python3-rosdep \
     python3-vcstool \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+    ros-${ROS_DISTRO}-rmw-fastrtps-cpp \
     ros-${ROS_DISTRO}-desktop \
   && rm -rf /var/lib/apt/lists/*
 
@@ -68,10 +74,6 @@ RUN groupadd --gid $RUN_AS_GID ${USERNAME} \
   && chmod 0440 /etc/sudoers.d/${USERNAME} \
   && echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ${HOME_DIR}/.bashrc \
   && echo "source install/setup.bash" >> ${HOME_DIR}/.bashrc \
-  && echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" \
-    >> ${HOME_DIR}/.bashrc \
-  && echo "export CYCLONEDDS_URI=${CYCLONEDDS_URI}" \
-    >> ${HOME_DIR}/.bashrc \
   && echo "source /etc/profile.d/bash_completion.sh" >> ${HOME_DIR}/.bashrc \
   && chown -R ${USERNAME}: ${HOME_DIR}
 
@@ -80,8 +82,10 @@ RUN mkdir -p ${WORKSPACE} \
   && chown -R ${USERNAME}: ${HOME_DIR}
 WORKDIR ${WORKSPACE}
 
-# copy config files
+# setup dds config
 ADD ./dds_config ${DDS_CONFIG_DIR}
+
+# enable either cyclone dds or fast rtps
 
 # copy code into workspace and set ownership to user
 ADD --chown=${USERNAME}:${USERNAME} ./src ${WORKSPACE}/src

@@ -9,6 +9,16 @@ USERNAME=seymour
 WORKSPACE=/home/$(USERNAME)/workspace
 RUN_AS_UID=$(shell id -u)
 RUN_AS_GID=$(shell id -g)
+RMW_IMPLEMENTATION="rmw_cyclonedds_cpp"
+# RMW_IMPLEMENTATION="rmw_fastrtps_cpp"
+
+DOCKER_RUN_ARGS=--rm -it \
+		--platform $(PLATFORM) \
+		--network host \
+		--privileged \
+		--env DISPLAY \
+		--env RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION} \
+		--volume $(PWD):$(WORKSPACE)
 
 PHONY: help
 help: ## show help message
@@ -20,12 +30,7 @@ version: ## print the package version
 
 .PHONY: run
 run: ## start container with shell
-	docker run --rm -it \
-		--platform $(PLATFORM) \
-		--network host \
-		--privileged \
-		--env="DISPLAY" \
-		--volume $(PWD):$(WORKSPACE) \
+	docker run $(DOCKER_RUN_ARGS) \
 		--name $(PACKAGE) \
 		$(CONTAINER) \
 		/bin/bash -i
@@ -52,7 +57,6 @@ image: ## builds the docker image
 build: image ## build current source in container
 	docker run --rm -t \
 		--platform $(PLATFORM) \
-		--network host \
 		--volume $(PWD):$(WORKSPACE) \
 		--name $(PACKAGE) \
 		$(CONTAINER) \
@@ -64,24 +68,14 @@ clean: ## remove colcon build artifacts
 
 .PHONY: talker-demo
 talker-demo: ## run demo talker node
-	docker run --rm -it \
-		--platform $(PLATFORM) \
-		--network host \
-		--privileged \
-		--env="DISPLAY" \
-		--volume $(PWD):$(WORKSPACE) \
+	docker run $(DOCKER_RUN_ARGS) \
 		--name $(PACKAGE)-talker \
 		$(CONTAINER) \
 		/bin/bash -ic "ros2 run demo_nodes_cpp talker"
 
 .PHONY: listener-demo
 listener-demo: ## run demo talker node
-	docker run --rm -it \
-		--platform $(PLATFORM) \
-		--network host \
-		--privileged \
-		--env="DISPLAY" \
-		--volume $(PWD):$(WORKSPACE) \
+	docker run $(DOCKER_RUN_ARGS) \
 		--name $(PACKAGE)-listener \
 		$(CONTAINER) \
 		/bin/bash -ic "ros2 run demo_nodes_cpp listener"
