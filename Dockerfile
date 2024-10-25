@@ -99,5 +99,7 @@ RUN /bin/bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash \
   && rosdep install -y -r -i --from-paths ${WORKSPACE}/src \
   && sudo rm -rf /var/lib/apt/lists/*"
 
+# RUN unset FASTRTPS_DEFAULT_PROFILES_FILE
+
 # by default hold container open in background
 CMD ["tail", "-f", "/dev/null"]

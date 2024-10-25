@@ -3,21 +3,23 @@ SHELL := /bin/bash
 PACKAGE=seymour-dev
 VERSION:=0.1.0
 PLATFORM=linux/amd64
-#PLATFORM=linux/arm64
+# PLATFORM=linux/arm64
 CONTAINER:=ghcr.io/freshrobotics/$(PACKAGE)-$(PLATFORM):$(VERSION)
 USERNAME=seymour
 WORKSPACE=/home/$(USERNAME)/workspace
 RUN_AS_UID=$(shell id -u)
 RUN_AS_GID=$(shell id -g)
-RMW_IMPLEMENTATION="rmw_cyclonedds_cpp"
-# RMW_IMPLEMENTATION="rmw_fastrtps_cpp"
+# RMW_IMPLEMENTATION="rmw_cyclonedds_cpp"
+RMW_IMPLEMENTATION="rmw_fastrtps_cpp"
+ROS_DISCOVERY_SERVER=127.0.0.1:11811
 
 DOCKER_RUN_ARGS=--rm -it \
 		--platform $(PLATFORM) \
 		--network host \
 		--privileged \
 		--env DISPLAY \
-		--env RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION} \
+		--env RMW_IMPLEMENTATION=$(RMW_IMPLEMENTATION) \
+		--env ROS_DISCOVERY_SERVER=$(ROS_DISCOVERY_SERVER) \
 		--volume $(PWD):$(WORKSPACE)
 
 PHONY: help
@@ -79,6 +81,13 @@ listener-demo: ## run demo talker node
 		--name $(PACKAGE)-listener \
 		$(CONTAINER) \
 		/bin/bash -ic "ros2 run demo_nodes_cpp listener"
+
+.PHONY: discovery-server
+discovery-server: ## run fastrtps discovery server
+	docker run $(DOCKER_RUN_ARGS) \
+		--name $(PACKAGE)-discovery \
+		$(CONTAINER) \
+		/bin/bash -ic "fastdds discovery --server-id 0"
 
 .PHONY: install-multiarch
 install-multiarch: ## setup multiarch support on ubuntu
