@@ -3,21 +3,22 @@ SHELL := /bin/bash
 PACKAGE=seymour-dev
 VERSION:=0.1.0
 PLATFORM=linux/amd64
-#PLATFORM=linux/arm64
+# PLATFORM=linux/arm64
 CONTAINER:=ghcr.io/freshrobotics/$(PACKAGE)-$(PLATFORM):$(VERSION)
 USERNAME=seymour
 WORKSPACE=/home/$(USERNAME)/workspace
 RUN_AS_UID=$(shell id -u)
 RUN_AS_GID=$(shell id -g)
-RMW_IMPLEMENTATION="rmw_cyclonedds_cpp"
-# RMW_IMPLEMENTATION="rmw_fastrtps_cpp"
+# RMW_IMPLEMENTATION="rmw_cyclonedds_cpp"
+RMW_IMPLEMENTATION="rmw_fastrtps_cpp"
 
 DOCKER_RUN_ARGS=--rm -it \
 		--platform $(PLATFORM) \
-		--network host \
 		--privileged \
+		--network host \
+		--ipc host \
 		--env DISPLAY \
-		--env RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION} \
+		--env RMW_IMPLEMENTATION=$(RMW_IMPLEMENTATION) \
 		--volume $(PWD):$(WORKSPACE)
 
 PHONY: help
