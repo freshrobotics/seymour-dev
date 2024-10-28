@@ -50,7 +50,7 @@ image: ## builds the docker image
 		--platform $(PLATFORM) \
 		--build-arg USERNAME=$(USERNAME) \
 		--build-arg RUN_AS_UID=$(RUN_AS_UID) \
-		--build-arg RUN_AS_UID=$(RUN_AS_UID) \
+		--build-arg RUN_AS_GID=$(RUN_AS_GID) \
 		--tag $(CONTAINER) \
 		.
 
