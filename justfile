@@ -9,6 +9,10 @@ tag := "ghcr.io" / "freshrobotics" / image-name + ":" + version
 default:
   @just --list
 
+# print the image version
+version:
+  @echo {{version}}
+
 # create container manifest for image tag
 create-manifest:
   @podman manifest create {{tag}}
@@ -28,9 +32,9 @@ push-image:
 run:
   @podman run \
     --platform {{run-platform}} \
-		--privileged \
-		--network host \
-		--ipc host \
-		--env DISPLAY=${DISPLAY} \
-		--name {{image-name}} \
+    --privileged \
+    --network host \
+    --ipc host \
+    --env DISPLAY=${DISPLAY} \
+    --name {{image-name}} \
     /bin/bash
