@@ -43,6 +43,6 @@ run:
     {{tag}} \
     /bin/bash
 
-# setup qemu to allow cross platform emulation
-setup-qemu:
+# setup qemu to allow cross platform architecture emulation
+setup-multiarch:
   @sudo apt update && sudo apt install -y qemu-user-static binfmt-support
