@@ -23,7 +23,7 @@ in memory of [seymour papert](https://en.wikipedia.org/wiki/Seymour_Papert)
 * [podman](https://podman.io/)
     - `$ sudo apt install podman`
 * [just](https://github.com/casey/just)
-    - `$ sudo apt install just`
+    - `$ sudo apt install just` (on ubuntu 24.04+)
 
 
 ## developing
