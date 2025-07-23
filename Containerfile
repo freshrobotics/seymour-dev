@@ -55,6 +55,9 @@ RUN colcon mixin add default \
   https://raw.githubusercontent.com/colcon/colcon-metadata-repository/master/index.yaml && \
   colcon metadata update
 
+# add dds configs to image
+ADD ./dds_config ${DDS_CONFIG_DIR}
+
 # remove default 'ubuntu' user account
 RUN deluser --remove-home ubuntu
 

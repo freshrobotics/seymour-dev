@@ -32,13 +32,15 @@ push-image:
 
 # run container with set shell
 run:
-  @podman run \
+  @xhost +local:root
+  @podman run -it --rm \
     --platform {{run-platform}} \
     --privileged \
     --network host \
     --ipc host \
     --env DISPLAY=${DISPLAY} \
     --name {{image-name}} \
+    {{tag}} \
     /bin/bash
 
 # setup qemu to allow cross platform emulation
