@@ -15,6 +15,8 @@ version:
 
 # create container manifest for image tag
 create-manifest:
+  # if there is an existing manifest for tag remove it
+  @podman manifest rm -i {{tag}}
   @podman manifest create {{tag}}
 
 # build container image
@@ -38,3 +40,7 @@ run:
     --env DISPLAY=${DISPLAY} \
     --name {{image-name}} \
     /bin/bash
+
+# setup qemu to allow cross platform emulation
+setup-qemu:
+  @sudo apt update && sudo apt install -y qemu-user-static binfmt-support
